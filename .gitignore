@@ -1,10 +1,5 @@
-*.mat
 *.m
 *.asv
-*.tex
-*.csv
 __pycache__/
 *.pyc
-sweep_log.txt
-custom_log.txt
-results/
+matlab.mat

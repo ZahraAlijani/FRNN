@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\caption{Training parameters and performance for square hidden states $h_1=h_2$ ($f=20$, $p=7$, $m=4$). Batch size = 1000, 60 batches, 100 epochs.}
+\label{tab:hidden_state_performance}
+\begin{tabular}{cccccc}
+\toprule
+$h_1/h_2$ & Num. Neuron & Loss    & Train acc & Test acc & $T$ (s) \\
+\midrule
+2      & 804  & 0.4313 & 50.7250 &50.0500 & 57.5645  \\
+4      & 942  & 0.1426 & 85.9983 &86.8100 & 64.1198  \\
+6      & 1104  & 0.0943 & 90.8417 &89.9600 & 70.6912  \\
+8      & 1290  & 0.0477 & 95.3883 &94.5300 & 77.2423  \\
+10      & 1500  & 0.0377 & 96.3650 &95.8900 & 83.9236  \\
+12      & 1734  & 0.0323 & 96.8850 &96.1700 & 90.6051  \\
+14      & 1992  & 0.0275 & 97.4000 &96.6900 & 97.2412  \\
+16      & 2274  & 0.0252 & 97.5900 &96.4100 & 103.8206  \\
+18      & 2580  & 0.0237 & 97.7633 &97.1100 & 110.7244  \\
+20      & 2910  & 0.0218 & 97.9583 &97.2900 & 117.3104  \\
+\bottomrule
+\end{tabular}%
+\end{table}

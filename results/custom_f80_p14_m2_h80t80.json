@@ -1,0 +1,1 @@
+{"f": 80, "p": 14, "m_grid": 2, "h1": 80, "h2": 80, "learning_rate": 0.0005, "batch_size": 500, "total_epoch": 100, "param_n": 41530, "train_loss": 0.007901280704362674, "train_accuracy": 0.9937, "test_accuracy": 0.9728, "test_loss": 0.033377428715772366, "run_time": 123.98911621332168}

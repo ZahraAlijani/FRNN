@@ -1,0 +1,2 @@
+f,p,m_grid,h1,h2,learning_rate,batch_size,total_epoch,num_neuron,loss,train_acc_pct,test_acc_pct,T_s_per_epoch
+80,14,2,80,80,0.0005,500,100,41530,0.007901,99.3700,97.2800,123.9891

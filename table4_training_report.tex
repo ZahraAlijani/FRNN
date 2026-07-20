@@ -1,0 +1,25 @@
+\begin{table}[htbp]
+\centering
+\caption{Training parameters and performance. Batch size = 1000, 60 batches, 100 epochs (except row marked \textsuperscript{*}; see note).}
+\label{tab:training_parameters_performance}
+\begin{tabular}{cccccc}
+\toprule
+$f$ & Num. Neuron & Loss    & Train acc & Test acc & $T$ (s) \\
+\midrule
+2      & 276  & 0.1820 & 81.4833 &81.7600 & 13.4645  \\
+4      & 338  & 0.1238 & 87.9250 &88.3700 & 17.7559  \\
+6      & 408  & 0.1165 & 88.5183 &89.5300 & 22.0660  \\
+8      & 486  & 0.1227 & 88.1583 &88.3200 & 26.3529  \\
+10      & 572  & 0.0949 & 90.6133 &90.4300 & 30.6840  \\
+12      & 666  & 0.0984 & 90.2850 &91.0300 & 34.9724  \\
+14      & 768  & 0.0987 & 90.3250 &90.5200 & 39.2767  \\
+16      & 878  & 0.0959 & 90.5200 &90.5700 & 43.5584  \\
+18      & 996  & 0.1504 & 85.1000 &85.0400 & 47.9114  \\
+20      & 1122  & 0.0829 & 91.8667 &92.0800 & 52.2000  \\
+80\textsuperscript{*}      & 41530  & 0.0079 & 99.3700 &97.2800 & 123.9891  \\
+\bottomrule
+\end{tabular}%
+
+\vspace{2pt}
+{\footnotesize\textsuperscript{*}$p=14$, $m=2$, $h_1{=}h_2{=}80$, batch size $=500$ (120 batches), learning rate $=0.0005$ (all other rows: $p=7$, $m=4$, $h_1{=}10$, $h_2{=}1$, batch size $=1000$ (60 batches), learning rate $=0.01$).}
+\end{table}
