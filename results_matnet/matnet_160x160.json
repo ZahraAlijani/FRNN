@@ -1,0 +1,1 @@
+{"param_n": 367370, "train_loss": 0.0023242510288650755, "train_accuracy": 1.0, "test_accuracy": 0.9838, "test_loss": 0.057170668586971604, "run_time": 41.61482189655304, "hidden_dims": [160, 160]}

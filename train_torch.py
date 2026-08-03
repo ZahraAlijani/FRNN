@@ -21,24 +21,48 @@ from scipy.io import loadmat, savemat
 from two_drnn import matlab_label_to_digit
 from two_drnn_torch import create_net_torch, forward_batch, margin_loss_batch
 
-_CACHE: dict[str, object] = {}
+_CACHE: dict[str, dict[str, object]] = {}
 
 
-def _load_data(device: str, dtype: torch.dtype):
-    if "x_train" not in _CACHE:
-        tr = loadmat("MNIST2.mat")
-        x_train = np.ascontiguousarray(np.transpose(np.asarray(tr["MNSIT_Train"]), (2, 0, 1))).astype(np.float64)
-        y_train = matlab_label_to_digit(tr["MNSIT_TrainL"]).astype(np.int64)
-        te = loadmat("MNIST2Test.mat")
-        x_test = np.ascontiguousarray(np.transpose(np.asarray(te["X_Test"]), (2, 0, 1))).astype(np.float64)
-        y_test = matlab_label_to_digit(te["Y_Test"]).astype(np.int64)
-        _CACHE.update(
+def _load_mnist():
+    tr = loadmat("MNIST2.mat")
+    x_train = np.ascontiguousarray(np.transpose(np.asarray(tr["MNSIT_Train"]), (2, 0, 1))).astype(np.float64)
+    y_train = matlab_label_to_digit(tr["MNSIT_TrainL"]).astype(np.int64)
+    te = loadmat("MNIST2Test.mat")
+    x_test = np.ascontiguousarray(np.transpose(np.asarray(te["X_Test"]), (2, 0, 1))).astype(np.float64)
+    y_test = matlab_label_to_digit(te["Y_Test"]).astype(np.int64)
+    return x_train, y_train, x_test, y_test
+
+
+def _load_fashion_mnist():
+    """Drop-in replacement dataset: same 28x28 grayscale shape as MNIST, pixels
+    normalized to [0,1] to match MNIST2.mat's normalization exactly."""
+    from torchvision.datasets import FashionMNIST
+
+    root = "fashion_mnist_data"
+    train_ds = FashionMNIST(root=root, train=True, download=True)
+    test_ds = FashionMNIST(root=root, train=False, download=True)
+    x_train = train_ds.data.numpy().astype(np.float64) / 255.0
+    y_train = train_ds.targets.numpy().astype(np.int64)
+    x_test = test_ds.data.numpy().astype(np.float64) / 255.0
+    y_test = test_ds.targets.numpy().astype(np.int64)
+    return x_train, y_train, x_test, y_test
+
+
+_LOADERS = {"mnist": _load_mnist, "fashion_mnist": _load_fashion_mnist}
+
+
+def _load_data(device: str, dtype: torch.dtype, dataset: str = "mnist"):
+    if dataset not in _CACHE:
+        x_train, y_train, x_test, y_test = _LOADERS[dataset]()
+        _CACHE[dataset] = dict(
             x_train=torch.tensor(x_train, dtype=dtype, device=device),
             y_train=torch.tensor(y_train, device=device),
             x_test=torch.tensor(x_test, dtype=dtype, device=device),
             y_test=torch.tensor(y_test, device=device),
         )
-    return _CACHE["x_train"], _CACHE["y_train"], _CACHE["x_test"], _CACHE["y_test"]
+    c = _CACHE[dataset]
+    return c["x_train"], c["y_train"], c["x_test"], c["y_test"]
 
 
 _WEIGHT_ATTRS = ("W_FeatL", "W_FeatR", "W_HP_L", "W_HP_R",
@@ -64,9 +88,9 @@ def _evaluate(net, x, y, eval_batch=2000):
 
 def train_for_f(f, total_epoch=100, batch_size=1000, learning_rate=0.001,
                  init_scale=0.01, seed=0, device="cuda", verbose=True, save=True,
-                 h1=10, h2=1, p=7, m_grid=4):
+                 h1=10, h2=1, p=7, m_grid=4, dataset="mnist"):
     dtype = torch.float64
-    x_train, y_train, x_test, y_test = _load_data(device, dtype)
+    x_train, y_train, x_test, y_test = _load_data(device, dtype, dataset=dataset)
     n_train = x_train.shape[0]
 
     net = create_net_torch(p, f, h1, h2, m_grid, seed=seed, device=device, dtype=dtype)
@@ -122,7 +146,8 @@ def train_for_f(f, total_epoch=100, batch_size=1000, learning_rate=0.001,
 
     if save:
         net_dict = {a: getattr(net, a).detach().cpu().numpy() for a in _WEIGHT_ATTRS + _BIAS_ATTRS}
-        savemat(f"RNN2D_H({h1}t{h2})m{m_grid}f{f}.mat",
+        suffix = "" if dataset == "mnist" else f"_{dataset}"
+        savemat(f"RNN2D_H({h1}t{h2})m{m_grid}f{f}{suffix}.mat",
                 {"net": net_dict, "loss_log": loss_log, "accuracy_log": accuracy_log,
                  "epoch_count": total_epoch})
 
