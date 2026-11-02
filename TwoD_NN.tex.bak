@@ -1,0 +1,509 @@
+\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
+%%\documentclass[pdflatex,sn-mathphys-ay]{sn-jnl}% Math and Physical Sciences Author Year Reference Style
+%%\documentclass[pdflatex,sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
+%%\documentclass[pdflatex,sn-vancouver-num]{sn-jnl}% Vancouver Numbered Reference Style
+%%\documentclass[pdflatex,sn-vancouver-ay]{sn-jnl}% Vancouver Author Year Reference Style
+%%\documentclass[pdflatex,sn-apa]{sn-jnl}% APA Reference Style
+%%\documentclass[pdflatex,sn-chicago]{sn-jnl}% Chicago-based Humanities Reference Style
+
+%%%% Standard Packages
+%%<additional latex packages if required can be included here>
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+%%%%
+
+%%%%%=============================================================================%%%%
+%%%%  Remarks: This template is provided to aid authors with the preparation
+%%%%  of original research articles intended for submission to journals published 
+%%%%  by Springer Nature. The guidance has been prepared in partnership with 
+%%%%  production teams to conform to Springer Nature technical requirements. 
+%%%%  Editorial and presentation requirements differ among journal portfolios and 
+%%%%  research disciplines. You may find sections in this template are irrelevant 
+%%%%  to your work and are empowered to omit any such section if allowed by the 
+%%%%  journal you intend to submit to. The submission guidelines and policies 
+%%%%  of the journal take precedence. A detailed User Manual is available in the 
+%%%%  template package for technical guidance.
+%%%%%=============================================================================%%%%
+
+%% as per the requirement new theorem styles can be included as shown below
+\theoremstyle{thmstyleone}%
+\newtheorem{theorem}{Theorem}%  meant for continuous numbers
+%%\newtheorem{theorem}{Theorem}[section]% meant for sectionwise numbers
+%% optional argument [theorem] produces theorem numbering sequence instead of independent numbers for Proposition
+\newtheorem{proposition}[theorem]{Proposition}% 
+%%\newtheorem{proposition}{Proposition}% to get separate numbers for theorem and proposition etc.
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{example}{Example}%
+\newtheorem{remark}{Remark}%
+
+\theoremstyle{thmstylethree}%
+\newtheorem{definition}{Definition}%
+
+\raggedbottom
+%%\unnumbered% uncomment this for unnumbered level heads
+
+\begin{document}
+
+\title[2D Neural Networks]{2D Neural Networks: Application on Ultra-Lightweight Image Recognition  on Mobile Devices}
+
+%\author*[1]{\fnm{Babak} \sur{Shiri}}\email{shiri@njtc.edu.cn}
+
+
+
+
+
+\affil*[1]{\orgdiv{Key Laboratory of Numerical Simulation of Sichuan Province, School of Mathematics and Big Data}, \orgname{Neijiang Normal Univeristy}, \orgaddress{ \city{Neijiang}, \postcode{641100}, \state{Sichuan}, \country{China}}}
+
+
+\abstract{A novel two-dimensional neural network preserving inherent matrix structure is proposed for image recognition. Full spatial information is exploited via left and right linear transformations without flattening. Extremely lightweight models (super-tiny, tiny, ultra-light configurations) are constructed and evaluated on the MNIST dataset. Fast training and high classification accuracy are achieved under shallow two-layer architecture. A real-time Android application is implemented for handwritten digit recognition. The proposed method is validated as efficient and deployable on resource‑constrained edge devices.}
+
+
+\keywords{2D neural networks, lightweight deep learning, ultra-light networks, MNIST classification, mobile implementation, edge AI.}
+
+%%\pacs[JEL Classification]{D8, H51}
+
+%%\pacs[MSC Classification]{35A01, 65L10, 65L12, 65L20, 65L70}
+
+\maketitle
+
+\section{Introduction}
+Traditional deep neural networks often suffer from excessive model size, high computational cost, large memory consumption, and significant energy usage during both training and inference. These drawbacks limit their deployment on resource-constrained devices and raise serious concerns regarding environmental sustainability. This work is motivated by the critical demand for ultra-lightweight neural networks that maintain strong performance while drastically reducing computational overhead. Lighter models enable faster inference, lower memory requirements, reduced energy consumption, and more efficient training.
+
+Various lightweight and efficient learning models have been proposed for visual recognition tasks.
+Fundamental techniques for neural network initialization and optimization have been well established in \cite{xavier_glorot, heavy_init, kingma2014adam}.
+Classical frameworks, including support-vector networks \cite{Cortes1995}, backpropagation-based multilayer perceptrons \cite{Rumelhart1986}, and convolutional neural networks \cite{Lecun1998, Krizhevsky2012}, have laid solid foundations for high-precision image classification.
+Recently, low-power neuromorphic and optoelectronic neural networks have drawn growing attention for edge computing and mobile applications \cite{Li2023, Beyeler2013, Song2024}.
+Nevertheless, the performance and efficiency of lightweight architectures that fully preserve the inherent spatial structure of images still can be further improved.
+
+Beyond computational burdens, conventional linear transformation mechanisms in basic network designs exhibit inherent structural limitations. Given an input image matrix $\boldsymbol{X}$ and learnable weight matrix $\boldsymbol{W}$, the output feature representation $\boldsymbol{Y}$ is given by
+\[
+\boldsymbol{Y} = \boldsymbol{W}\boldsymbol{X}.
+\]
+Each entry can be written as
+\[
+Y_{ij} = \sum_{p} W_{ip} X_{pj}.
+\]
+This formulation shows that the feature value $Y_{ij}$ at position $(i,j)$ depends only on the $j$-th column of $\boldsymbol{X}$. Elements from other columns and spatial regions provide no contribution. Standard right-multiplication captures correlations only along the row dimension and ignores cross-column spatial dependencies. Such restricted information flow weakens spatial context modeling and limits feature representation capability.
+
+To overcome both the high computational cost of deep models and the insufficient spatial modeling of traditional linear operations, this paper introduces a novel class of two-dimensional neural networks. Experiments are performed using the shallowest possible structure with only two layers. Evaluations are carried out under a well-defined classification of lightweight network scales:
+\begin{itemize}
+    \item Super Tiny Ultra-Light: less than 1K parameters
+    \item Tiny Ultra-Light: 1K--10K parameters
+    \item Ultra-Light: 10K--100K parameters
+\end{itemize}
+
+The main contributions of this work are summarized as follows:
+\begin{itemize}
+    \item A novel 2D neural network framework is proposed, which preserves the inherent matrix structure of images and captures full spatial dependencies via left–right linear transformations.
+    \item A hierarchical lightweight model classification is established, covering super-tiny, tiny, and ultra-light scales for fair and systematic evaluation.
+    \item A shallow two-layer architecture is developed, which achieves competitive accuracy on MNIST with extremely low parameters and fast training speed.
+    \item A real‑time Android application is implemented for handwritten digit recognition, validating the effectiveness of the proposed method on mobile and edge devices.
+\end{itemize}
+
+In Section 2 we introduce the proposed 2D neural network framework, including its layer structure, forward propagation, and backpropagation rules. Section 3 presents comprehensive experimental results on the MNIST dataset under three lightweight scales, along with performance comparisons with state‑of‑the‑art methods. The mobile implementation of the proposed model for real‑time handwritten digit recognition is demonstrated in in section 3.1.
+\section{Proposed 2D Neural Network}
+Images are naturally represented as two- or three-dimensional numerical arrays. This raises a fundamental research question: why are such inherent 2D spatial structures rarely preserved in standard neural network designs? In most conventional frameworks, matrix-shaped inputs are flattened into one-dimensional vectors before processing. This work investigates whether high-quality feature learning and competitive classification performance can be achieved directly on raw matrix inputs without destructive flattening operations.
+
+To address this question, we consider a generic input matrix $\boldsymbol{X} \in \mathbb{R}^{\mu_1 \times \nu_1}$ with initial size $\mu_1 \times \nu_1$. The core objective of each network layer is to map this input to a new feature matrix $\boldsymbol{Z}^{[1]}$ of target dimension $\mu_2 \times \nu_2$. First, a left-side linear transformation is applied via a learnable weight matrix $\boldsymbol{W}^{[L1]} \in \mathbb{R}^{\mu_2 \times \mu_1}$, producing an intermediate feature matrix of size $\mu_2 \times \nu_1$. To adapt the second spatial dimension, a complementary right-side multiplication is further performed using $\boldsymbol{W}^{[R1]} \in \mathbb{R}^{\nu_1 \times \nu_2}$.
+
+The complete construction of the first network layer is formulated as
+\begin{align}
+\boldsymbol{Z}^{[L1]}_{\mu_2 \times \nu_1} &= \boldsymbol{W}^{[L1]}_{\mu_2 \times \mu_1} \boldsymbol{X}_{\mu_1 \times \nu_1} + \boldsymbol{B}^{[L1]}_{\mu_2 \times \nu_1}, \\
+\boldsymbol{Z}^{[1]}_{\mu_2 \times \nu_2}  &= \boldsymbol{Z}^{[L1]}_{\mu_2 \times \nu_1} \boldsymbol{W}^{[R1]}_{\nu_1 \times \nu_2} + \boldsymbol{B}^{[R1]}_{\mu_2 \times \nu_2},
+\end{align}
+where $\boldsymbol{B}^{[L1]}$ and $\boldsymbol{B}^{[R1]}$ denote learnable bias matrices. Substituting the first equation into the second yields a compact combined expression:
+\[
+\boldsymbol{Z}^{[1]}
+=
+\boldsymbol{W}^{[L1]} \boldsymbol{X} \boldsymbol{W}^{[R1]}
++ \boldsymbol{B}^{[L1]} \boldsymbol{W}^{[R1]}
++ \boldsymbol{B}^{[R1]}.
+\]
+Since the term $\boldsymbol{B}^{[L1]} \boldsymbol{W}^{[R1]}$ is input-independent and constant during forward propagation, it can be merged into a single unified bias term $\boldsymbol{B}^{[1]}$. Accordingly, the pre-activation output of the 2D layer simplifies to
+\begin{equation}
+\boldsymbol{Z}^{[1]}_{\mu_2 \times \nu_2}
+=
+\boldsymbol{W}^{[L1]}_{\mu_2 \times \mu_1}
+\boldsymbol{X}_{\mu_1 \times \nu_1}
+\boldsymbol{W}^{[R1]}_{\nu_1 \times \nu_2}
++ \boldsymbol{B}^{[1]}_{\mu_2 \times \nu_2}.
+\end{equation}
+
+Subsequently, a nonlinear activation function
+\[
+F^{[1]}: \mathbb{R}^{\mu_2 \times \nu_2} \to \mathbb{R}^{\mu_2 \times \nu_2}
+\]
+is applied element-wise to introduce nonlinearity, producing the final first-layer output:
+\begin{equation}
+\boldsymbol{Y}^{[1]}_{\mu_2 \times \nu_2}
+=
+F^{[1]}\bigl(\boldsymbol{Z}^{[1]}_{\mu_2 \times \nu_2}\bigr).
+\end{equation}
+
+By extension, a deep 2D neural network with total depth $d$ can be defined through recursive layer-wise propagation:
+\begin{equation}
+\begin{split}
+\boldsymbol{Z}^{[1]}_{\mu_2 \times \nu_2}
+&=
+\boldsymbol{W}^{[L1]}_{\mu_2 \times \mu_1}
+\boldsymbol{X}_{\mu_1 \times \nu_1}
+\boldsymbol{W}^{[R1]}_{\nu_1 \times \nu_2}
++ \boldsymbol{B}^{[1]}_{\mu_2 \times \nu_2},\\
+\boldsymbol{Y}^{[1]}_{\mu_2 \times \nu_2}
+&=
+F^{[1]}\bigl(\boldsymbol{Z}^{[1]}_{\mu_2 \times \nu_2}\bigr),\\
+\boldsymbol{Z}^{[2]}_{\mu_3 \times \nu_3}
+&=
+\boldsymbol{W}^{[L2]}_{\mu_3 \times \mu_2}
+\boldsymbol{Y}^{[1]}_{\mu_2 \times \nu_2}
+\boldsymbol{W}^{[R2]}_{\nu_2 \times \nu_3}
++ \boldsymbol{B}^{[2]}_{\mu_3 \times \nu_3},\\
+\boldsymbol{Y}^{[2]}_{\mu_3 \times \nu_3}
+&=
+F^{[2]}\bigl(\boldsymbol{Z}^{[2]}_{\mu_3 \times \nu_3}\bigr),\\
+&\ \vdots\\
+\boldsymbol{Z}^{[d]}_{\mu_{d+1} \times \nu_{d+1}}
+&=
+\boldsymbol{W}^{[Ld]}_{\mu_{d+1} \times \mu_d}
+\boldsymbol{Y}^{[d-1]}_{\mu_d \times \nu_d}
+\boldsymbol{W}^{[Rd]}_{\nu_d \times \nu_{d+1}}
++ \boldsymbol{B}^{[d]}_{\mu_{d+1} \times \nu_{d+1}},\\
+\boldsymbol{Y}^{[d]}_{\mu_{d+1} \times \nu_{d+1}}
+&=
+F^{[d]}\bigl(\boldsymbol{Z}^{[d]}_{\mu_{d+1} \times \nu_{d+1}}\bigr).
+\end{split}
+\end{equation}
+
+Let $\boldsymbol{X}_i$ denote the matrix-form training samples and $\boldsymbol{O}_i$ denote the corresponding target outputs for $i\in I_T$, where $I_T$ represents the index set of the entire training dataset. Network training is formulated as an optimization problem that minimizes the empirical loss function $L(\boldsymbol{Y}^{[d]}_i,\boldsymbol{O}_i)$.
+
+Denote the gradient of the loss with respect to the final-layer output as $\nabla_{\boldsymbol{Y}^{[d]}_i} L$. The gradient with respect to the pre-activation matrix is computed as
+\begin{equation}
+\nabla_{\boldsymbol{Z}^{[d]}_i} L
+=
+\nabla_{\boldsymbol{Y}^{[d]}_i} L
+\circ
+D_\circ\! F^{[d]}\bigl(\boldsymbol{Z}_i^{[d]}\bigr),
+\end{equation}
+in which $\circ$ indicates the Hadamard (element-wise) product, and $D_\circ$ denotes the element-wise differentiation of the activation function.
+
+Backpropagation is derived to compute gradients for all learnable parameters. For the output layer $\ell=d$, the gradient formulas are given by
+\begin{align*}
+\nabla_{\boldsymbol{W}^{[Ld]}} L
+&=
+\sum_{i\in I_T}
+\nabla_{\boldsymbol{Z}_i^{[d]}} L
+\big(\boldsymbol{W}^{[Rd]}\big)^\top
+\left(\boldsymbol{Y}_i^{[d-1]}\right)^\top,
+\\
+\nabla_{\boldsymbol{W}^{[Rd]}} L
+&=
+\sum_{i\in I_T}\big(\boldsymbol{Y}_i^{[d-1]}\big)^\top
+\big(\boldsymbol{W}^{[Ld]}\big)^\top
+\nabla_{\boldsymbol{Z}_i^{[d]}} L,
+\\
+\nabla_{\boldsymbol{B}^{[d]}} L
+&=
+\sum_{i\in I_T} \nabla_{\boldsymbol{Z}_i^{[d]}} L,
+\\
+\nabla_{\boldsymbol{Y}_i^{[d-1]}} L
+&=
+\big(\boldsymbol{W}^{[Ld]}\big)^\top
+\nabla_{\boldsymbol{Z}_i^{[d]}} L
+\big(\boldsymbol{W}^{[Rd]}\big)^\top.
+\end{align*}
+
+For any general hidden layer $\ell \in \{1,\dots,d-1\}$, we first define
+\[
+\nabla_{\boldsymbol{Z}_i^{[\ell]}} L
+=
+\nabla_{\boldsymbol{Y}_i^{[\ell]}} L
+\circ
+D_\circ F^{[\ell]}\big(\boldsymbol{Z}_i^{[\ell]}\big).
+\]
+The corresponding gradient rules take the form
+\begin{align*}
+\nabla_{\boldsymbol{W}^{[L\ell]}} L
+&=
+\sum_{i\in I_T}
+\nabla_{\boldsymbol{Z}_i^{[\ell]}} L
+\big(\boldsymbol{W}^{[R\ell]}\big)^\top
+(\boldsymbol{Y}_i^{[\ell-1]})^\top,
+\\
+\nabla_{\boldsymbol{W}^{[R\ell]}} L
+&=
+\sum_{i\in I_T}\big(\boldsymbol{Y}_i^{[\ell-1]}\big)^\top
+\big(\boldsymbol{W}^{[L\ell]}\big)^\top
+\nabla_{\boldsymbol{Z}_i^{[\ell]}} L,
+\\
+\nabla_{\boldsymbol{B}^{[\ell]}} L
+&=
+\sum_{i\in I_T} \nabla_{\boldsymbol{Z}_i^{[\ell]}} L,
+\\
+\nabla_{\boldsymbol{Y}_i^{[\ell-1]}} L
+&=
+\big(\boldsymbol{W}^{[L\ell]}\big)^\top
+\nabla_{\boldsymbol{Z}_i^{[\ell]}} L
+\big(\boldsymbol{W}^{[R\ell]}\big)^\top.
+\end{align*}
+
+For the input boundary case, we set $\boldsymbol{Y}_i^{[0]} = \boldsymbol{X}_i$. The gradient with respect to the input matrix is then
+\[
+\nabla_{\boldsymbol{X}_i} L
+=
+\big(\boldsymbol{W}^{[L1]}\big)^\top
+\nabla_{\boldsymbol{Z}_i^{[1]}} L
+\big(\boldsymbol{W}^{[R1]}\big)^\top.
+\]
+
+
+
+\section{Experimental Results on MNIST Digit Recognition}
+In this section, $\boldsymbol{X}$ denotes a single sample from the MNIST dataset with standard dimension $\mathbb{R}^{28 \times 28}$.
+We employ the shallowest feasible structure of the proposed 2D neural network, consisting of only two layers.
+
+\begin{example}
+The complete two-layer architecture is defined as follows:
+\begin{description}
+\item[Layer 1] $Y^{[1]}: \mathbb{R}^{28\times 28} \to \mathbb{R}^{\mu_2\times \mu_2}$, where $\nu_2 = \mu_2$, with the ReLU activation function.
+\item[Layer 2] $\boldsymbol{a}: \mathbb{R}^{\mu_2\times \mu_2} \to \mathbb{R}^{10\times 1}$, with the softmax activation function for final classification.
+\end{description}
+
+A customized categorical cross-entropy loss is adopted for MNIST digit recognition:
+\[
+\mathcal{L}(\boldsymbol{y}, \boldsymbol{a})
+=
+\sum_{k=1}^{10}
+\biggl[
+y_k \max\bigl(0,\, m^{+} - a_k\bigr)^2
++ \gamma\,(1-y_k) \max\bigl(0,\, a_k - m^{-}\bigr)^2
+\biggr],
+\]
+where $a_k$ denotes the network output for class $k$, and $y_k$ is the corresponding ground-truth label.
+The hyperparameters are set as $\gamma=1$, $m^{+}=0.9$, and $m^{-}=0.1$.
+The total number of neurons (Num. Neuron) of the proposed 2D-NN-2L is computed by
+\[
+2(28\mu_2)+\mu_2^2+10\mu_2+\mu_2+10
+= \mu_2^2 + 67\mu_2 + 10.
+\]
+
+Performance is evaluated under three lightweight scales:
+\begin{itemize}
+    \item \textbf{Table \ref{tab:1}}: Super Tiny Ultra-Light ($\mu_2 = 1,2,\dots,12$)
+    \item \textbf{Table \ref{tab:2}}: Tiny Ultra-Light ($\mu_2 = 13,14,\dots,71$)
+    \item \textbf{Table \ref{tab:3}}: Ultra-Light ($\mu_2 = 72,73,\dots,284$)
+\end{itemize}
+\end{example}
+
+Experimental results for the Super Tiny Ultra-Light models are summarized in Table~\ref{tab:1}.
+The performance is compared with several lightweight methods:
+\begin{description}
+\item[Optoelectronic NN \cite{Li2023}] (1024 photonic synapses) Test Accuracy = 94.1\%
+\item[Spiking NN \cite{Beyeler2013}] (3136 synapses) Test Accuracy = 92\%
+\item[Multilayer incoherent Optoelectronic NN \cite{Song2024}] Test Accuracy = 92.3\% (3 layers)
+\end{description}
+
+Results for the Tiny Ultra-Light category are presented in Table~\ref{tab:2}.
+All models are trained for 100 epochs.
+Better performance can be achieved by increasing the number of epochs;
+for instance, the model with $\mu_2=41$ reaches 97.23\% test accuracy after 1000 epochs.
+The Tiny Ultra-Light models (under 10K parameters) are compared with classical approaches:
+\begin{description}
+\item[LeNet-5 \cite{Lecun1998}] (classical CNN, $\approx$ 60K parameters) Test Accuracy = 99.05\%
+\item[Support-Vector Networks \cite{Cortes1995}] (RBF kernel) Test Accuracy = 98.6\%
+\item[Shallow MLP \cite{Rumelhart1986}] ($\approx$ 10K parameters) Test Accuracy = 97.3\%
+\item[Deep CNN \cite{Krizhevsky2012}] (3 conv layers + batch norm) Test Accuracy = 99.4\%
+\end{description}
+
+Training is performed using the Adam optimizer, which combines momentum and RMSprop for adaptive learning rate scheduling.
+The initial learning rate is set as
+\[\eta=\bar{\mathcal{L}}/3,\]
+where $\bar{\mathcal{L}}$ denotes the average loss over the training set.
+All parameters are initialized with the Xavier scheme for stable convergence.
+
+\begin{table}[htbp]
+\centering
+\caption{Training parameters and performance for Super Tiny Ultra-Light 2D-NN-2L.
+Batch size = 1000, 60 batches, 100 epochs.
+$T$: training time per epoch (seconds) on a standard PC.}
+\label{tab:1}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+$\nu_2$ & Num. Neuron & Loss   & Train acc & Test acc & $T$ (s) \\
+\hline
+1    & 78    & 0.5162  & 35.13  & 36.06  & 0.7 \\
+2    & 148   & 0.3268  & 68.71  & 70.25  & 0.7 \\
+3    & 220   & 0.2512  & 77.52  & 78.61  & 0.8 \\
+4    & 294   & 0.1964  & 82.88  & 81.96  & 0.8 \\
+5    & 370   & 0.1489  & 86.31  & 87.17  & 0.9 \\
+6    & 448   & 0.1236  & 88.79  & 89.39  & 0.9 \\
+7    & 528   & 0.1172  & 89.24  & 88.85  & 0.9 \\
+8    & 610   & 0.0804  & 92.74  & 92.67  & 1.0 \\
+9    & 694   & 0.0698  & 93.75  & 93.77  & 1.0 \\
+10   & 780   & 0.0723  & 93.35  & 93.14  & 1.0 \\
+11   & 868   & 0.0657  & 93.93  & 94.13  & 1.1 \\
+12   & 958   & 0.0514  & 95.35  & 94.78  & 1.1 \\
+\hline
+\end{tabular}%
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Training parameters and performance for Tiny Ultra-Light 2D-NN-2L.
+Batch size = 1000, 60 batches, 100 epochs (last row: 1000 epochs).}
+\label{tab:2}
+\begin{tabular}{cccccc}
+\toprule
+$\nu_2$ & Num. Neuron & Loss    & Train acc & Test acc & $T$ (s) \\
+\midrule
+13      & 1050  & 0.05451 & 95.16  & 94.58  & 1.2 \\
+17      & 1438  & 0.03735 & 96.76  & 95.70  & 1.4 \\
+19      & 1644  & 0.03232 & 97.25  & 96.06  & 1.5 \\
+23      & 2080  & 0.03264 & 97.15  & 96.10  & 1.6 \\
+31      & 3048  & 0.01875 & 98.50  & 96.48  & 2.0 \\
+41      & 4438  & 0.01451 & 98.85  & 96.76  & 3.4 \\
+47      & 5368  & 0.01065 & 99.27  & 97.15  & 4.6 \\
+53      & 6370  & 0.01174 & 99.10  & 97.26  & 5.5 \\
+59      & 7444  & 0.00732 & 99.52  & 97.21  & 7.6 \\
+67      & 8988  & 0.00609 & 99.59  & 97.47  & 8.9 \\
+71      & 9808  & 0.00748 & 99.46  & 97.48  & 9.8 \\
+$71^{*}$ & 9808& 0.00289 & 99.79  & 97.53  & 9.8 \\
+\bottomrule
+\end{tabular}%
+%\vspace{0.3cm}
+\parbox[t]{\textwidth}{\small{$^{*}$Trained with 1000 epochs.}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Training parameters and performance for Ultra-Light 2D-NN-2L.
+Batch size = 1000, 60 batches. Trained with 350 epochs.}
+\label{tab:3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+$\nu_2$ & Num. Neuron & Loss    & Train acc & Test acc & $T$ (s) \\
+\hline
+284 & 99694& 0.001251  &   99.91       & 98.35
+& 150 \\
+\hline
+\end{tabular}
+\end{table}
+\subsection{Implementation on Mobile Devices}
+We developed an Android application in Kotlin with Jetpack Compose for handwritten digit recognition. The application captures user input via a drawing canvas, converts the handwritten sketch into a normalized 28×28 binary matrix, and performs real-time classification using the proposed lightweight 2D neural network with pre-trained weights imported from MATLAB (Figure \ref{fig1}). The system also visualizes the digit matrix as a heatmap and supports real-time image preprocessing and inference. The network was trained on the MNIST dataset using rounding operations to generate binary representations.
+
+Experimental evaluation shows minor limitations with highly translated or rotated handwritten digits, leading to a test accuracy of approximately $98.35\%$. It is worth noting that the current implementation does not use feature extraction, patch-based processing, or attention mechanisms. Since training the ultra-lightweight network on a standard CPU takes less than 15 minutes, the proposed method exhibits strong potential for efficient edge AI deployment and further optimization.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{ASF1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{ASF2}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{ASF3}
+    \end{minipage}
+    \caption{Test results of the digit recognition application on a mobile screen.}
+    \label{fig1}
+\end{figure}
+
+\section{Conclusion}
+In this paper, we introduced a novel 2D neural network framework that preserves spatial structure and captures full contextual information for image recognition tasks. The proposed method was validated on the MNIST dataset, achieving fast training and high classification accuracy that is competitive with models without feature extraction or attention modules. The results confirm the effectiveness and efficiency of the proposed 2D network design, supporting its potential for integration with modern lightweight AI techniques toward fast training and low-cost development. Furthermore, the proposed approach enables rapid construction of mobile applications, especially for educational scenarios such as alphabet learning tools for languages that lack dedicated resources.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section*{Data Availability}
+The MNIST dataset used in this study is publicly available at \url{http://yann.lecun.com/exdb/mnist/.} 
+All trained model weights, MATLAB code, and supporting data are deposited in Zenodo at \url{https://doi.org/10.5281/zenodo.20162759}, as cited in the references.
+
+
+\section*{Conflict of Interest Declaration}
+The author declares that there are no conflicts of interest regarding the publication of this paper. There is no financial or non-financial relationship with any organization or individual that could influence the results and conclusions presented in this study.
+
+
+
+\begin{thebibliography}{99}
+
+\bibitem{xavier_glorot}
+Glorot, X.; Bengio, Y. Understanding the difficulty of training deep feedforward neural networks.
+In \textit{Proceedings of the 13th International Conference on Artificial Intelligence and Statistics (AISTATS)},
+Sardinia, Italy, 2010, pp.~249--256.
+
+\bibitem{heavy_init}
+Cho, Y.; Choi, J. Heavy-tailed weight initialization for deep neural networks.
+\textit{IEEE Access} \textbf{2021}, \textbf{9}, 126714--126724.
+
+\bibitem{kingma2014adam}
+Kingma, D.P.; Ba, J. Adam: A method for stochastic optimization.
+arXiv preprint arXiv:1412.6980, 2014.
+
+\bibitem{Cortes1995}
+Cortes, C.; Vapnik, V. Support-vector networks.
+\textit{Mach. Learn.} \textbf{1995}, \textbf{20}, 273--297.
+
+\bibitem{Rumelhart1986}
+Rumelhart, D.E.; Hinton, G.E.; Williams, R.J. Learning representations by back-propagating errors.
+\textit{Nature} \textbf{1986}, \textbf{323}, 533--536.
+
+\bibitem{Lecun1998}
+LeCun, Y.; Bottou, L.; Bengio, Y.; Haffner, P. Gradient-based learning applied to document recognition.
+\textit{Proc. IEEE} \textbf{1998}, \textbf{86}(11), 2278--2324.
+
+\bibitem{Krizhevsky2012}
+Krizhevsky, A.; Sutskever, I.; Hinton, G.E. ImageNet classification with deep convolutional neural networks.
+In \textit{Advances in Neural Information Processing Systems (NIPS)}, 2012, pp.~1097--1105.
+
+\bibitem{Li2023}
+Li, G. Artificial optical synaptic devices with ultra-low power consumption.
+\textit{Light Sci. Appl.} \textbf{2023}, \textbf{12}, 24.
+
+\bibitem{Beyeler2013}
+Beyeler, M.; Dutt, N.D.; Krichmar, J.L. Categorization and decision-making in a neurobiologically plausible spiking network using a STDP-like learning rule.
+\textit{Neural Networks} \textbf{2013}, \textbf{48}, 109--124.
+
+\bibitem{Song2024}
+Song, A.; Kottapalli, S.N.M.; Goyal, R.; et al. Low-power scalable multilayer optoelectronic neural networks enabled with incoherent light.
+\textit{Nat. Commun.} \textbf{2024}, \textbf{15}, 10692.
+
+
+
+\end{thebibliography}
+
+
+
+
+
+
+
+
+\end{document}
