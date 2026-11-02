@@ -1,0 +1,46 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{flushleft}
+Zahra Alijani\\
+Institute for Research and Applications of Fuzzy Modeling\\
+University of Ostrava\\
+Ostrava, 701 03, Czech Republic\\
+zahra.alijani@osu.cz
+
+\vspace{1em}
+September 29, 2026
+\end{flushleft}
+
+\noindent Dear Editor-in-Chief,
+
+\vspace{1em}
+\noindent Please find enclosed our manuscript entitled \textbf{``Ultra-Lightweight Dense and Recurrent 2D Neural Networks for Edge and Mobile Image Recognition''}, by Babak Shiri and Zahra Alijani, which we submit for consideration as an original research article in \emph{Neural Networks}.
+
+\vspace{1em}
+\noindent The manuscript studies two complementary ultra-lightweight architectures for image recognition that process images directly as matrices, avoiding the vectorization step used in most conventional networks. A dense two-layer variant and a patch-based recurrent variant (2D-RNN) are developed on a shared bilinear-transformation formulation, and are systematically compared across a three-tier parameter budget (super-tiny, tiny, and ultra-light, ranging from under 1K to under 100K parameters) on both MNIST and the harder Fashion-MNIST benchmark. We additionally reproduce the Matrix Neural Network (MatNet) baseline directly from its governing equations to obtain a matched-parameter-count comparison, and demonstrate practical deployability with a real-time Android application for handwritten digit recognition.
+
+\vspace{1em}
+\noindent We would like to be transparent about how this work relates to prior literature. The underlying bilinear layer formulation is related to established matrix neural network work, including MatNet (Gao et al., 2017), and matrix-valued recurrent formulations have previously been studied by Renanse et al. (Neurocomputing, 2023) and, in the specific setting of multi-dimensional recurrence over spatial grids, by Graves et al.'s Multi-Dimensional RNNs (ICANN, 2007) and their 2D-LSTM descendants. We do not claim the bilinear mechanism itself as new. The contribution we offer is a systematic, matched-parameter-budget empirical comparison of dense and recurrent instantiations of this formulation under extreme parameter constraints, together with a working edge-deployment demonstration -- a combination we believe is of practical interest to the \emph{Neural Networks} readership even where the underlying mechanism builds on existing matrix-learning foundations.
+
+\vspace{1em}
+\noindent This manuscript is original, has not been published previously, and is not under consideration for publication elsewhere. All authors have approved the manuscript and agree with its submission to \emph{Neural Networks}.
+
+
+\vspace{1em}
+\noindent We believe this work will be of interest to your readership and thank you for your consideration.
+
+\vspace{2em}
+\noindent Sincerely,
+
+\vspace{2em}
+\noindent Zahra Alijani (corresponding author)\\
+On behalf of Babak Shiri and Zahra Alijani
+
+\end{document}
